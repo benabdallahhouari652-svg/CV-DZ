@@ -79,7 +79,7 @@ class UserCVData {
   String primaryColorHex; // customizable theme color
 
   UserCVData({
-    this.fullName = 'هوارى بن عبد الله (Houari Benabdallah)',
+    this.fullName = 'الهواري بن عبد الله (Houari Benabdallah)',
     this.jobTitle = 'مدرب كرة قدم | مدرب حراس | محلل أداء | منشط مخيمات | مراسل صحفي',
     this.email = 'benabdallahhouari652@gmail.com',
     this.phone = '+213 555 00 00 00',

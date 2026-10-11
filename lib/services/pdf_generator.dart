@@ -8,7 +8,7 @@ class PdfGeneratorService {
   static Future<Uint8List> generateCvPdf(UserCVData cv) async {
     final pdf = pw.Document();
 
-    // Load appropriate fonts for Arabic and Multilingual support
+    // Multilingual font loading
     final arabicFont = await PdfGoogleFonts.cairoRegular();
     final arabicBoldFont = await PdfGoogleFonts.cairoBold();
     final latinFont = await PdfGoogleFonts.poppinsRegular();
@@ -19,18 +19,31 @@ class PdfGeneratorService {
     final primaryBoldFont = isArabic ? arabicBoldFont : latinBoldFont;
     final textDirection = isArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr;
 
-    // Theme Colors
-    final primaryColor = cv.templateId == 'modern_emerald'
-        ? PdfColor.fromHex('#0D5C3A') // Algerian Deep Emerald
-        : cv.templateId == 'executive_navy'
-            ? PdfColor.fromHex('#1A365D')
-            : PdfColor.fromHex('#2D3748');
+    // Dynamic Color Schemes based on chosen template
+    PdfColor primaryColor;
+    PdfColor accentColor;
 
-    final accentColor = cv.templateId == 'modern_emerald'
-        ? PdfColor.fromHex('#C53030') // Algerian Red Accent
-        : PdfColor.fromHex('#D69E2E');
+    switch (cv.templateId) {
+      case 'ruby_prestige':
+        primaryColor = PdfColor.fromHex('#9B111E'); // Royal Algerian Ruby
+        accentColor = PdfColor.fromHex('#D4AF37'); // Gold
+        break;
+      case 'executive_navy':
+        primaryColor = PdfColor.fromHex('#1A365D');
+        accentColor = PdfColor.fromHex('#D69E2E');
+        break;
+      case 'minimalist_dark':
+        primaryColor = PdfColor.fromHex('#212529');
+        accentColor = PdfColor.fromHex('#495057');
+        break;
+      case 'modern_emerald':
+      default:
+        primaryColor = PdfColor.fromHex('#0D5C3A'); // Algerian Deep Emerald
+        accentColor = PdfColor.fromHex('#C53030'); // Algerian Red
+        break;
+    }
 
-    final lightBg = PdfColor.fromHex('#F7FAFC');
+    final lightBg = PdfColor.fromHex('#F8F9FA');
     final textColor = PdfColor.fromHex('#2D3748');
     final subtleTextColor = PdfColor.fromHex('#718096');
 
@@ -39,7 +52,6 @@ class PdfGeneratorService {
       userImage = pw.MemoryImage(cv.photoBytes!);
     }
 
-    // Section Titles based on language
     final titles = {
       'summary': isArabic
           ? 'نبذة مهنية'
@@ -60,18 +72,20 @@ class PdfGeneratorService {
           ? 'المهارات والتقنيات'
           : cv.targetLanguage == AppLanguage.fr
               ? 'Compétences'
-              : 'Skills',
+              : 'Skills & Tools',
       'languages': isArabic
           ? 'اللغات'
           : cv.targetLanguage == AppLanguage.fr
               ? 'Langues'
               : 'Languages',
-      'contact': isArabic
-          ? 'معلومات الاتصال'
-          : cv.targetLanguage == AppLanguage.fr
-              ? 'Contact'
-              : 'Contact Info',
     };
+
+    // QR Code generation target (LinkedIn or Portfolio)
+    final qrTarget = cv.linkedinUrl.isNotEmpty
+        ? cv.linkedinUrl
+        : cv.githubOrPortfolioUrl.isNotEmpty
+            ? cv.githubOrPortfolioUrl
+            : 'https://cv-dz-fawn.vercel.app';
 
     pdf.addPage(
       pw.Page(
@@ -85,17 +99,17 @@ class PdfGeneratorService {
         build: (pw.Context context) {
           return pw.Column(
             children: [
-              // HEADER BANNER
+              // HEADER BANNER WITH QR CODE
               pw.Container(
                 color: primaryColor,
-                padding: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+                padding: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 26),
                 child: pw.Row(
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
                     if (userImage != null) ...[
                       pw.Container(
-                        width: 90,
-                        height: 90,
+                        width: 88,
+                        height: 88,
                         decoration: pw.BoxDecoration(
                           shape: pw.BoxShape.circle,
                           border: pw.Border.all(color: PdfColors.white, width: 3),
@@ -105,71 +119,83 @@ class PdfGeneratorService {
                           ),
                         ),
                       ),
-                      pw.SizedBox(width: 24),
+                      pw.SizedBox(width: 20),
                     ],
                     pw.Expanded(
                       child: pw.Column(
-                        crossAxisAlignment: isArabic
-                            ? pw.CrossAxisAlignment.start
-                            : pw.CrossAxisAlignment.start,
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
                           pw.Text(
                             cv.fullName,
                             style: pw.TextStyle(
-                              fontSize: 24,
+                              fontSize: 22,
                               fontWeight: pw.FontWeight.bold,
                               color: PdfColors.white,
                               font: primaryBoldFont,
                             ),
                           ),
-                          pw.SizedBox(height: 6),
+                          pw.SizedBox(height: 4),
                           pw.Text(
                             cv.jobTitle,
                             style: pw.TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               color: PdfColor.fromHex('#E2E8F0'),
                               font: primaryFont,
                             ),
                           ),
-                          pw.SizedBox(height: 10),
+                          pw.SizedBox(height: 8),
                           pw.Wrap(
-                            spacing: 16,
-                            runSpacing: 6,
+                            spacing: 14,
+                            runSpacing: 4,
                             children: [
                               if (cv.phone.isNotEmpty)
                                 pw.Text(
                                   cv.phone,
-                                  style: pw.TextStyle(color: PdfColors.white, fontSize: 10),
+                                  style: pw.TextStyle(color: PdfColors.white, fontSize: 9.5),
                                 ),
                               if (cv.email.isNotEmpty)
                                 pw.Text(
                                   cv.email,
-                                  style: pw.TextStyle(color: PdfColors.white, fontSize: 10),
+                                  style: pw.TextStyle(color: PdfColors.white, fontSize: 9.5),
                                 ),
                               if (cv.address.isNotEmpty)
                                 pw.Text(
                                   cv.address,
-                                  style: pw.TextStyle(color: PdfColors.white, fontSize: 10),
+                                  style: pw.TextStyle(color: PdfColors.white, fontSize: 9.5),
                                 ),
                             ],
                           ),
                         ],
                       ),
                     ),
+                    // Live Interactive Barcode / QR Code
+                    pw.Container(
+                      padding: const pw.EdgeInsets.all(5),
+                      decoration: pw.BoxDecoration(
+                        color: PdfColors.white,
+                        borderRadius: const pw.BorderRadius.all(pw.Radius.circular(6)),
+                      ),
+                      child: pw.BarcodeWidget(
+                        barcode: pw.Barcode.qrCode(),
+                        data: qrTarget,
+                        width: 52,
+                        height: 52,
+                      ),
+                    ),
                   ],
                 ),
               ),
 
-              // BODY CONTENT
+              // MAIN CONTENT BODY
               pw.Expanded(
                 child: pw.Container(
-                  padding: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                  padding: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 22),
                   child: pw.Row(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      // MAIN COLUMN (Summary, Experience, Education)
+                      // LEFT / PRIMARY COLUMN
                       pw.Expanded(
-                        flex: 65,
+                        flex: 66,
                         child: pw.Column(
                           crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
@@ -180,12 +206,12 @@ class PdfGeneratorService {
                               pw.Text(
                                 cv.summary,
                                 style: pw.TextStyle(
-                                  fontSize: 10.5,
+                                  fontSize: 10,
                                   color: textColor,
-                                  lineSpacing: 2,
+                                  lineSpacing: 1.8,
                                 ),
                               ),
-                              pw.SizedBox(height: 18),
+                              pw.SizedBox(height: 16),
                             ],
 
                             // Experience Section
@@ -205,14 +231,14 @@ class PdfGeneratorService {
                                             exp.title,
                                             style: pw.TextStyle(
                                               fontWeight: pw.FontWeight.bold,
-                                              fontSize: 11,
+                                              fontSize: 10.5,
                                               color: textColor,
                                             ),
                                           ),
                                           pw.Text(
                                             exp.period,
                                             style: pw.TextStyle(
-                                              fontSize: 9.5,
+                                              fontSize: 9,
                                               color: subtleTextColor,
                                             ),
                                           ),
@@ -221,19 +247,19 @@ class PdfGeneratorService {
                                       pw.Text(
                                         exp.company,
                                         style: pw.TextStyle(
-                                          fontSize: 10,
+                                          fontSize: 9.5,
                                           fontWeight: pw.FontWeight.bold,
                                           color: primaryColor,
                                         ),
                                       ),
                                       if (exp.description.isNotEmpty) ...[
-                                        pw.SizedBox(height: 4),
+                                        pw.SizedBox(height: 3),
                                         pw.Text(
                                           exp.description,
                                           style: pw.TextStyle(
-                                            fontSize: 9.5,
+                                            fontSize: 9,
                                             color: textColor,
-                                            lineSpacing: 1.5,
+                                            lineSpacing: 1.4,
                                           ),
                                         ),
                                       ],
@@ -241,7 +267,7 @@ class PdfGeneratorService {
                                   ),
                                 );
                               }),
-                              pw.SizedBox(height: 10),
+                              pw.SizedBox(height: 8),
                             ],
 
                             // Education Section
@@ -261,14 +287,14 @@ class PdfGeneratorService {
                                             edu.degree,
                                             style: pw.TextStyle(
                                               fontWeight: pw.FontWeight.bold,
-                                              fontSize: 10.5,
+                                              fontSize: 10,
                                               color: textColor,
                                             ),
                                           ),
                                           pw.Text(
                                             edu.year,
                                             style: pw.TextStyle(
-                                              fontSize: 9.5,
+                                              fontSize: 9,
                                               color: subtleTextColor,
                                             ),
                                           ),
@@ -277,7 +303,7 @@ class PdfGeneratorService {
                                       pw.Text(
                                         edu.institution,
                                         style: pw.TextStyle(
-                                          fontSize: 9.5,
+                                          fontSize: 9,
                                           color: primaryColor,
                                         ),
                                       ),
@@ -286,7 +312,7 @@ class PdfGeneratorService {
                                         pw.Text(
                                           edu.details,
                                           style: pw.TextStyle(
-                                            fontSize: 9,
+                                            fontSize: 8.5,
                                             color: subtleTextColor,
                                           ),
                                         ),
@@ -300,13 +326,13 @@ class PdfGeneratorService {
                         ),
                       ),
 
-                      pw.SizedBox(width: 24),
+                      pw.SizedBox(width: 20),
 
-                      // SIDEBAR COLUMN (Skills, Languages, QR code badge)
+                      // RIGHT / SIDEBAR COLUMN
                       pw.Expanded(
-                        flex: 35,
+                        flex: 34,
                         child: pw.Container(
-                          padding: const pw.EdgeInsets.all(14),
+                          padding: const pw.EdgeInsets.all(12),
                           decoration: pw.BoxDecoration(
                             color: lightBg,
                             borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
@@ -319,12 +345,12 @@ class PdfGeneratorService {
                               pw.SizedBox(height: 8),
                               ...cv.skills.map(
                                 (skill) => pw.Container(
-                                  margin: const pw.EdgeInsets.only(bottom: 6),
+                                  margin: const pw.EdgeInsets.only(bottom: 5),
                                   child: pw.Row(
                                     children: [
                                       pw.Container(
-                                        width: 5,
-                                        height: 5,
+                                        width: 4,
+                                        height: 4,
                                         decoration: pw.BoxDecoration(
                                           color: accentColor,
                                           shape: pw.BoxShape.circle,
@@ -334,7 +360,7 @@ class PdfGeneratorService {
                                       pw.Expanded(
                                         child: pw.Text(
                                           skill,
-                                          style: pw.TextStyle(fontSize: 9.5, color: textColor),
+                                          style: pw.TextStyle(fontSize: 9, color: textColor),
                                         ),
                                       ),
                                     ],
@@ -342,19 +368,19 @@ class PdfGeneratorService {
                                 ),
                               ),
 
-                              pw.SizedBox(height: 18),
+                              pw.SizedBox(height: 16),
 
                               // Languages Section
                               _buildSectionTitle(titles['languages']!, primaryColor, primaryBoldFont),
                               pw.SizedBox(height: 8),
                               ...cv.spokenLanguages.map(
                                 (lang) => pw.Container(
-                                  margin: const pw.EdgeInsets.only(bottom: 6),
+                                  margin: const pw.EdgeInsets.only(bottom: 5),
                                   child: pw.Row(
                                     children: [
                                       pw.Container(
-                                        width: 5,
-                                        height: 5,
+                                        width: 4,
+                                        height: 4,
                                         decoration: pw.BoxDecoration(
                                           color: primaryColor,
                                           shape: pw.BoxShape.circle,
@@ -364,7 +390,7 @@ class PdfGeneratorService {
                                       pw.Expanded(
                                         child: pw.Text(
                                           lang,
-                                          style: pw.TextStyle(fontSize: 9.5, color: textColor),
+                                          style: pw.TextStyle(fontSize: 9, color: textColor),
                                         ),
                                       ),
                                     ],
@@ -372,20 +398,38 @@ class PdfGeneratorService {
                                 ),
                               ),
 
+                              if (cv.linkedinUrl.isNotEmpty || cv.githubOrPortfolioUrl.isNotEmpty) ...[
+                                pw.SizedBox(height: 14),
+                                _buildSectionTitle('روابط مهنية', primaryColor, primaryBoldFont),
+                                pw.SizedBox(height: 6),
+                                if (cv.linkedinUrl.isNotEmpty)
+                                  pw.Text(
+                                    'LinkedIn Profile',
+                                    style: pw.TextStyle(fontSize: 8.5, color: primaryColor, fontWeight: pw.FontWeight.bold),
+                                  ),
+                                if (cv.githubOrPortfolioUrl.isNotEmpty) ...[
+                                  pw.SizedBox(height: 3),
+                                  pw.Text(
+                                    'Portfolio / GitHub',
+                                    style: pw.TextStyle(fontSize: 8.5, color: primaryColor, fontWeight: pw.FontWeight.bold),
+                                  ),
+                                ],
+                              ],
+
                               pw.Spacer(),
 
-                              // CV-DZ Badge / Stamp
+                              // Official CV-DZ Stamp
                               pw.Center(
                                 child: pw.Container(
-                                  padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                   decoration: pw.BoxDecoration(
                                     border: pw.Border.all(color: subtleTextColor),
                                     borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
                                   ),
                                   child: pw.Text(
-                                    'Generated with CV-DZ',
+                                    'Made with CV-DZ • ATS Certified',
                                     style: pw.TextStyle(
-                                      fontSize: 8,
+                                      fontSize: 7.5,
                                       color: subtleTextColor,
                                       fontWeight: pw.FontWeight.bold,
                                     ),
@@ -416,16 +460,16 @@ class PdfGeneratorService {
         pw.Text(
           title,
           style: pw.TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: pw.FontWeight.bold,
             color: color,
             font: boldFont,
           ),
         ),
-        pw.SizedBox(height: 3),
+        pw.SizedBox(height: 2),
         pw.Container(
-          width: 32,
-          height: 2,
+          width: 28,
+          height: 1.5,
           color: color,
         ),
       ],

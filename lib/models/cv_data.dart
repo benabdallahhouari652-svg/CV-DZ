@@ -64,6 +64,8 @@ class UserCVData {
   String email;
   String phone;
   String address;
+  String linkedinUrl;
+  String githubOrPortfolioUrl;
   String summary;
   Uint8List? photoBytes;
 
@@ -73,7 +75,8 @@ class UserCVData {
   List<ExperienceItem> experiences;
 
   AppLanguage targetLanguage;
-  String templateId; // 'modern_emerald', 'executive_navy', 'classic_elegance'
+  String templateId; // 'modern_emerald', 'executive_navy', 'ruby_prestige', 'minimalist_dark'
+  String primaryColorHex; // customizable theme color
 
   UserCVData({
     this.fullName = 'أحمد بن علي',
@@ -81,6 +84,8 @@ class UserCVData {
     this.email = 'ahmed.benali@email.com',
     this.phone = '+213 555 12 34 56',
     this.address = 'الجزائر العاصمة، الجزائر',
+    this.linkedinUrl = 'https://linkedin.com/in/ahmed-benali',
+    this.githubOrPortfolioUrl = 'https://github.com/ahmed-benali',
     this.summary =
         'مهندس برمجيات ذو خبرة تزيد عن 4 سنوات في تطوير تطبيقات الهواتف الذكية وحلول الويب. متمكن من إنشاء تطبيقات متكاملة وسلسة الأداء وتصميم واجهات عصرية تتوافق مع المعايير العالمية.',
     this.photoBytes,
@@ -90,6 +95,7 @@ class UserCVData {
     List<ExperienceItem>? experiences,
     this.targetLanguage = AppLanguage.ar,
     this.templateId = 'modern_emerald',
+    this.primaryColorHex = '#0D5C3A',
   })  : skills = skills ??
             [
               'Flutter & Dart',
@@ -132,4 +138,18 @@ class UserCVData {
                     'تطوير الواجهات التفاعلية والربط مع الواجهات البرمجية وتكامل بوابات الدفع الإلكتروني والخرائط.',
               ),
             ];
+
+  // Calculate ATS Quality Score (0 to 100)
+  int calculateAtsScore() {
+    int score = 0;
+    if (fullName.trim().length > 3) score += 15;
+    if (jobTitle.trim().isNotEmpty) score += 10;
+    if (email.contains('@')) score += 10;
+    if (phone.trim().isNotEmpty) score += 10;
+    if (summary.trim().length > 50) score += 15;
+    if (skills.length >= 4) score += 15;
+    if (experiences.isNotEmpty) score += 15;
+    if (educations.isNotEmpty) score += 10;
+    return score.clamp(0, 100);
+  }
 }

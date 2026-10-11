@@ -16,14 +16,14 @@ class CvDzApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CV-DZ',
+      title: 'CV-DZ - المنشئ الذكي للسير الذاتية',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0D5C3A), // Algerian Emerald
+          seedColor: const Color(0xFF0D5C3A),
           primary: const Color(0xFF0D5C3A),
-          secondary: const Color(0xFFC53030), // Algerian Red
+          secondary: const Color(0xFFC53030),
         ),
         fontFamily: 'Cairo',
       ),
@@ -50,6 +50,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
+  late TextEditingController _linkedinController;
+  late TextEditingController _portfolioController;
   late TextEditingController _summaryController;
 
   @override
@@ -60,6 +62,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     _emailController = TextEditingController(text: _cvData.email);
     _phoneController = TextEditingController(text: _cvData.phone);
     _addressController = TextEditingController(text: _cvData.address);
+    _linkedinController = TextEditingController(text: _cvData.linkedinUrl);
+    _portfolioController = TextEditingController(text: _cvData.githubOrPortfolioUrl);
     _summaryController = TextEditingController(text: _cvData.summary);
   }
 
@@ -70,6 +74,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _linkedinController.dispose();
+    _portfolioController.dispose();
     _summaryController.dispose();
     super.dispose();
   }
@@ -80,6 +86,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     _cvData.email = _emailController.text;
     _cvData.phone = _phoneController.text;
     _cvData.address = _addressController.text;
+    _cvData.linkedinUrl = _linkedinController.text;
+    _cvData.githubOrPortfolioUrl = _portfolioController.text;
     _cvData.summary = _summaryController.text;
   }
 
@@ -131,8 +139,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       backgroundColor: Color(0xFFE8F5E9),
                       child: Icon(Icons.camera_alt, color: Color(0xFF0D5C3A)),
                     ),
-                    title: const Text('التقاط صورة بالهاتف الآن'),
-                    subtitle: const Text('صورة مباشرة واضحة مع إضاءة جيدة'),
+                    title: const Text('التقاط صورة بكاميرا الهاتف'),
+                    subtitle: const Text('صورة بورتريه واضحة وخلفية هادئة'),
                     onTap: () {
                       Navigator.pop(ctx);
                       _pickImage(ImageSource.camera);
@@ -143,7 +151,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       backgroundColor: Color(0xFFE3F2FD),
                       child: Icon(Icons.photo_library, color: Colors.blue),
                     ),
-                    title: const Text('اختيار من معرض الصور'),
+                    title: const Text('اختيار من ألبوم الصور'),
                     onTap: () {
                       Navigator.pop(ctx);
                       _pickImage(ImageSource.gallery);
@@ -172,7 +180,93 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     );
   }
 
-  // Quick translation/preset switcher
+  // AI Assistant Suggestions
+  void _showAiAssistantDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Directionality(
+          textDirection: _cvData.targetLanguage == AppLanguage.ar ? TextDirection.rtl : TextDirection.ltr,
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Row(
+              children: [
+                Icon(Icons.auto_awesome, color: Color(0xFF0D5C3A)),
+                SizedBox(width: 8),
+                Text('المساعد الذكي (AI Auto-Writer)'),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'اختر صياغة احترافية جاهزة تناسب مجالك لتحسين النبذة المهنية فوراً:',
+                    style: TextStyle(fontSize: 13, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildAiOptionTile(
+                    title: 'صيغة قيادية (Management & Leadership)',
+                    content:
+                        'خبير مهني ذو سجل حافل في قيادة المشاريع وتحقيق الأهداف الاستراتيجية بكفاءة عالية، مع مهارات تفاوض وتواصل متميزة وبناء فرق عمل فعالة.',
+                  ),
+                  const SizedBox(height: 8),
+                  _buildAiOptionTile(
+                    title: 'صيغة تقنية وهندسية (Tech & Engineering)',
+                    content:
+                        'مهندس شغوف بتطوير الحلول الرقمية المبتكرة وتطبيق أحدث المعايير البرمجية لرفع جودة الأنظمة وكفاءة الأداء التشغيلي بنسب قياسية.',
+                  ),
+                  const SizedBox(height: 8),
+                  _buildAiOptionTile(
+                    title: 'صيغة تسويق ومبيعات (Sales & Marketing)',
+                    content:
+                        'متخصص في نمو الأعمال والتسويق الرقمي وبناء العلاقات الاستراتيجية، ذو قدرة مثبتة على مضاعفة المبيعات وتوسيع الحصة السوقية.',
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('إغلاق'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAiOptionTile({required String title, required String content}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F8F4),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFC8E6C9)),
+      ),
+      child: ListTile(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0D5C3A))),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(content, style: const TextStyle(fontSize: 12)),
+        ),
+        trailing: const Icon(Icons.check_circle_outline, color: Color(0xFF0D5C3A)),
+        onTap: () {
+          setState(() {
+            _summaryController.text = content;
+            _cvData.summary = content;
+          });
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('تم تطبيق الصياغة الذكية بنجاح!')),
+          );
+        },
+      ),
+    );
+  }
+
+  // Multilingual preset switcher
   void _switchLanguage(AppLanguage lang) {
     _syncDataFromControllers();
     setState(() {
@@ -211,6 +305,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _syncDataFromControllers();
+    final atsScore = _cvData.calculateAtsScore();
+
     return Directionality(
       textDirection: _cvData.targetLanguage == AppLanguage.ar
           ? TextDirection.rtl
@@ -238,22 +335,37 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'المنشئ الذكي',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E293B),
+              // ATS Score Badge in Header
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: atsScore >= 80 ? Colors.green.shade50 : Colors.amber.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: atsScore >= 80 ? Colors.green : Colors.amber),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.verified, size: 14, color: atsScore >= 80 ? Colors.green : Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(
+                      'ATS: $atsScore%',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: atsScore >= 80 ? Colors.green.shade900 : Colors.orange.shade900,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
           actions: [
-            // Language selector dropdown
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: SegmentedButton<AppLanguage>(
-                style: ButtonStyle(
+                style: const ButtonStyle(
                   visualDensity: VisualDensity.compact,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -295,7 +407,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
             NavigationDestination(
               icon: Icon(Icons.work_outline),
               selectedIcon: Icon(Icons.work),
-              label: 'الخبرة والتعليم',
+              label: 'الخبرة والمهارات',
             ),
             NavigationDestination(
               icon: Icon(Icons.picture_as_pdf_outlined),
@@ -374,7 +486,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'التقط صورة بكاميرا الهاتف أو اختر صورة وسيقوم CV-DZ بضبطها في السيرة.',
+                          'التقط صورة بكاميرا الهاتف أو اختر صورة وسيقوم التطبيق بقصها وضبطها تلقائياً.',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -474,13 +586,39 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       border: OutlineInputBorder(),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _linkedinController,
+                          decoration: const InputDecoration(
+                            labelText: 'رابط LinkedIn (يتحول لـ QR)',
+                            prefixIcon: Icon(Icons.link),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: _portfolioController,
+                          decoration: const InputDecoration(
+                            labelText: 'رابط الموقع / GitHub',
+                            prefixIcon: Icon(Icons.language),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
 
-          // Summary Card
+          // Summary Card with AI Assistant Trigger
           Card(
             elevation: 0,
             shape: RoundedRectangleBorder(
@@ -501,25 +639,14 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F5E9),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          'AI-Ready',
-                          style: TextStyle(
-                            color: Color(0xFF0D5C3A),
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      TextButton.icon(
+                        onPressed: _showAiAssistantDialog,
+                        icon: const Icon(Icons.auto_awesome, size: 16, color: Color(0xFF0D5C3A)),
+                        label: const Text('صياغة بالذكاء الاصطناعي', style: TextStyle(color: Color(0xFF0D5C3A), fontWeight: FontWeight.bold, fontSize: 12)),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   TextField(
                     controller: _summaryController,
                     maxLines: 4,
@@ -656,6 +783,69 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
           const SizedBox(height: 16),
 
+          // Skills & Languages chips
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(color: Colors.grey.shade200),
+            ),
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('المهارات والتقنيات (Skills)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: _cvData.skills.map((s) => Chip(
+                      label: Text(s, style: const TextStyle(fontSize: 12)),
+                      onDeleted: () {
+                        setState(() {
+                          _cvData.skills.remove(s);
+                        });
+                      },
+                    )).toList(),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      final controller = TextEditingController();
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('إضافة مهارة جديدة'),
+                          content: TextField(controller: controller, decoration: const InputDecoration(hintText: 'مثال: React Native')),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+                            ElevatedButton(
+                              onPressed: () {
+                                if (controller.text.trim().isNotEmpty) {
+                                  setState(() {
+                                    _cvData.skills.add(controller.text.trim());
+                                  });
+                                }
+                                Navigator.pop(ctx);
+                              },
+                              child: const Text('إضافة'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add, size: 16),
+                    label: const Text('إضافة مهارة'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
           // Education Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -764,37 +954,60 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
+        preferredSize: const Size.fromHeight(56),
         child: Container(
           color: Colors.grey.shade100,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           alignment: Alignment.centerLeft,
-          child: Row(
-            children: [
-              const Icon(Icons.palette_outlined, size: 20),
-              const SizedBox(width: 8),
-              const Text('اختر القالب: '),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('الزمردي (الجزائر)'),
-                selected: _cvData.templateId == 'modern_emerald',
-                onSelected: (val) {
-                  setState(() {
-                    _cvData.templateId = 'modern_emerald';
-                  });
-                },
-              ),
-              const SizedBox(width: 8),
-              ChoiceChip(
-                label: const Text('الأزرق التنفيذي'),
-                selected: _cvData.templateId == 'executive_navy',
-                onSelected: (val) {
-                  setState(() {
-                    _cvData.templateId = 'executive_navy';
-                  });
-                },
-              ),
-            ],
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                const Icon(Icons.palette_outlined, size: 20),
+                const SizedBox(width: 6),
+                const Text('القالب: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(width: 6),
+                ChoiceChip(
+                  label: const Text('الزمردي الجزائري'),
+                  selected: _cvData.templateId == 'modern_emerald',
+                  onSelected: (val) {
+                    setState(() {
+                      _cvData.templateId = 'modern_emerald';
+                    });
+                  },
+                ),
+                const SizedBox(width: 6),
+                ChoiceChip(
+                  label: const Text('الياقوتي الفاخر'),
+                  selected: _cvData.templateId == 'ruby_prestige',
+                  onSelected: (val) {
+                    setState(() {
+                      _cvData.templateId = 'ruby_prestige';
+                    });
+                  },
+                ),
+                const SizedBox(width: 6),
+                ChoiceChip(
+                  label: const Text('الأزرق التنفيذي'),
+                  selected: _cvData.templateId == 'executive_navy',
+                  onSelected: (val) {
+                    setState(() {
+                      _cvData.templateId = 'executive_navy';
+                    });
+                  },
+                ),
+                const SizedBox(width: 6),
+                ChoiceChip(
+                  label: const Text('الأسود الكلاسيكي'),
+                  selected: _cvData.templateId == 'minimalist_dark',
+                  onSelected: (val) {
+                    setState(() {
+                      _cvData.templateId = 'minimalist_dark';
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -804,8 +1017,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
         allowSharing: true,
         canChangeOrientation: false,
         canChangePageFormat: false,
-        pdfFileName:
-            'CV_DZ_${_cvData.fullName.replaceAll(' ', '_')}.pdf',
+        pdfFileName: 'CV_DZ_${_cvData.fullName.replaceAll(' ', '_')}.pdf',
       ),
     );
   }

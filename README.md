@@ -1,17 +1,16 @@
-# cv_dz
+# CV-DZ 🇩🇿 - المنشئ الذكي للسير الذاتية الاحترافية
 
-A new Flutter project.
+تطبيق حديث واحترافي لإنشاء السير الذاتية بالهاتف بعدة لغات، متوافق بنسبة 100% مع أنظمة تتبع المتقدمين (ATS).
 
-## Getting Started
+## 🚀 المميزات الرئيسية
+* **التقاط واختيار الصورة بالهاتف:** إمكانية التقاط صورة بورتريه بالكاميرا أو اختيارها من المعرض وإدراجها بذكاء في السيرة الذاتية.
+* **دعم متعدد اللغات مع دعم كامل للغة العربية (RTL):** العربية، الفرنسية، والإنجليزية.
+* **تصدير ومعاينة PDF فورية (Vector / Pixel-Perfect):** ملفات PDF عالية الدقة تقبل النسخ ومتوافقة مع المعايير الدولية.
+* **قوالب أنيقة:** قالب زمردي وطني (Modern Emerald) وقالب تنفيذي (Executive Navy).
+* **إدارة كاملة:** التعليم، الخبرات، والمهارات واللغات.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ التقنيات المستخدمة
+* [Flutter](https://flutter.dev) (iOS, Android, Web)
+* [Dart](https://dart.dev)
+* Pdf & Printing Libraries
+* Google Fonts (Cairo & Poppins)

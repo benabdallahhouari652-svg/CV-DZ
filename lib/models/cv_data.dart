@@ -79,15 +79,15 @@ class UserCVData {
   String primaryColorHex; // customizable theme color
 
   UserCVData({
-    this.fullName = 'أحمد بن علي',
-    this.jobTitle = 'مهندس برمجيات ومطور تطبيقات',
-    this.email = 'ahmed.benali@email.com',
-    this.phone = '+213 555 12 34 56',
-    this.address = 'الجزائر العاصمة، الجزائر',
-    this.linkedinUrl = 'https://linkedin.com/in/ahmed-benali',
-    this.githubOrPortfolioUrl = 'https://github.com/ahmed-benali',
+    this.fullName = 'هوارى بن عبد الله (Houari Benabdallah)',
+    this.jobTitle = 'مدرب كرة قدم ومربٍ رياضي (Entraîneur de Football)',
+    this.email = 'benabdallahhouari652@gmail.com',
+    this.phone = '+213 555 00 00 00',
+    this.address = 'الجزائر (Algérie)',
+    this.linkedinUrl = 'https://www.linkedin.com/in/benabdallah-houari-18b77334b',
+    this.githubOrPortfolioUrl = 'https://cv-dz-fawn.vercel.app',
     this.summary =
-        'مهندس برمجيات ذو خبرة تزيد عن 4 سنوات في تطوير تطبيقات الهواتف الذكية وحلول الويب. متمكن من إنشاء تطبيقات متكاملة وسلسة الأداء وتصميم واجهات عصرية تتوافق مع المعايير العالمية.',
+        'مدرب كرة قدم ذو كفاءة وشغف كبير في التكوين الرياضي وتطوير مهارات اللاعبين الفردية والجماعية. متخصص في التخطيط التكتيكي، الإعداد البدني، زرع عقلية الفوز والانضباط، واكتشاف وصقل المواهب الكروية الصاعدة.',
     this.photoBytes,
     List<String>? skills,
     List<String>? spokenLanguages,
@@ -98,44 +98,44 @@ class UserCVData {
     this.primaryColorHex = '#0D5C3A',
   })  : skills = skills ??
             [
-              'Flutter & Dart',
-              'Firebase / Supabase',
-              'Node.js & REST APIs',
-              'Git & GitHub',
-              'UI/UX Design',
-              'حل المشكلات وإدارة المشاريع'
+              'التكتيك واستراتيجيات اللعب الحديثة',
+              'الإعداد البدني وتطوير اللياقة (Fitness)',
+              'القيادة والتحفيز النفسي (Leadership)',
+              'تكوين واكتشاف المواهب الشابة',
+              'إدارة المباريات وتحليل الأداء الفني',
+              'العمل الجماعي والروح الرياضية'
             ],
         spokenLanguages = spokenLanguages ??
-            ['العربية (اللغة الأم)', 'الفرنسية (مستوى متقدم)', 'الإنجليزية (طلاقة احترافية)'],
+            ['العربية (اللغة الأم)', 'الفرنسية (مستوى متقدم)', 'الإنجليزية (أساسية)'],
         educations = educations ??
             [
               EducationItem(
-                degree: 'ماستر في هندسة البرمجيات والذكاء الاصطناعي',
-                institution: 'جامعة العلوم والتكنولوجيا هواري بومدين (USTHB)',
-                year: '2020 - 2022',
-                details: 'تخرج بميزة جيد جداً ومشروع تخرج حول الحوسبة المتنقلة.',
+                degree: 'شهادة تدريب معتمدة في كرة القدم (Diplôme d\'Entraîneur)',
+                institution: 'الاتحادية الجزائرية لكرة القدم (FAF / FAF-CAF)',
+                year: '2021 - 2023',
+                details: 'تكوين متخصص في منهجيات التدريب الحديث، الإعداد البدني، والتحليل التكتيكي.',
               ),
               EducationItem(
-                degree: 'ليسانس في الإعلام الآلي (علوم الحاسوب)',
-                institution: 'جامعة الجزائر 1',
-                year: '2017 - 2020',
+                degree: 'تكوين في التربية البدنية والرياضية',
+                institution: 'معهد علوم وتقنيات الأنشطة البدنية والرياضية',
+                year: '2018 - 2021',
               ),
             ],
         experiences = experiences ??
             [
               ExperienceItem(
-                title: 'مطور تطبيقات أول (Senior Mobile Developer)',
-                company: 'شركة حلول التقنية الرقمية - الجزائر',
+                title: 'مدرب كرة قدم (Entraîneur Principal)',
+                company: 'نادي وأكاديمية كرة القدم - الجزائر',
                 period: '2022 - الآن',
                 description:
-                    'قيادة فريق تطوير تطبيقات الهواتف باستخدام Flutter، بناء أكثر من 5 تطبيقات ناجحة على Google Play وApp Store، وتحسين أداء التطبيقات بنسبة 35%.',
+                    'تخطيط وتنفيذ الحصص التدريبية الأسبوعية، قيادة الفريق في المنافسات الرسمية والودية، وتحقيق نتائج تصاعدية مع تطوير مهارات اللاعبين التكتيكية والبدنية.',
               ),
               ExperienceItem(
-                title: 'مطور واجهات وتطبيقات (Fullstack App Dev)',
-                company: 'ستارتاب تكنو - وهران',
-                period: '2021 - 2022',
+                title: 'مدرب فئات صغرى ومكوّن (Éducateur Sportif)',
+                company: 'مدرسة تكوين المواهب الكروية',
+                period: '2020 - 2022',
                 description:
-                    'تطوير الواجهات التفاعلية والربط مع الواجهات البرمجية وتكامل بوابات الدفع الإلكتروني والخرائط.',
+                    'تأطير وتلقين أبجديات اللعبة، صقل المهارات الفردية والانضباط الرياضي للاعبين الناشئين.',
               ),
             ];
 
